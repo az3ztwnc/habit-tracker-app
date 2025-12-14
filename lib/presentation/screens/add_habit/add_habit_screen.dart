@@ -7,6 +7,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/constants/habit_suggestions.dart';
 import '../../../core/constants/bad_habit_configs.dart';
 import '../../../core/constants/currencies.dart';
+import '../../../core/utils/icon_suggestion_engine.dart';
 import '../../../data/models/habit_model.dart';
 import '../../../providers/habit_provider.dart';
 import '../../widgets/common/gradient_button.dart';
@@ -348,6 +349,17 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                     _selectedCategory = suggestedCategories.first;
                   });
                 }
+                
+                // Smart icon suggestion based on habit name
+                if (value.isNotEmpty) {
+                  final suggestions = IconSuggestionEngine.getIconIndices(value, count: 1);
+                  if (suggestions.isNotEmpty) {
+                    setState(() {
+                      _selectedIconIndex = suggestions.first;
+                    });
+                  }
+                }
+                
                 // Try to detect bad habit config
                 if (_isQuitHabit) {
                   final config = BadHabitConfigs.getConfig(value);
@@ -472,61 +484,191 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
   }
 
   Widget _buildIconPicker() {
+    // Get smart icon suggestions for current habit name
+    final suggestions = _nameController.text.isNotEmpty
+        ? IconSuggestionEngine.getTopSuggestions(_nameController.text)
+        : <MapEntry<int, double>>[];
+    
+    // Show suggested icons first, then fill with common icons up to 24
+    final suggestedIndices = suggestions.map((s) => s.key).toSet();
+    final displayedIcons = <int>[...suggestedIndices];
+    
+    // Add common icons if we have less than 24
+    for (int i = 0; i < AppConstants.habitIcons.length && displayedIcons.length < 24; i++) {
+      if (!displayedIcons.contains(i)) {
+        displayedIcons.add(i);
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Icon',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 12),
-        GlassContainer(
-          padding: const EdgeInsets.all(12),
-          child: GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 8,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Icon',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            itemCount: AppConstants.habitIcons.length,
-            itemBuilder: (context, index) {
-              final isSelected = index == _selectedIconIndex;
-              return GestureDetector(
-                onTap: () => setState(() => _selectedIconIndex = index),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  decoration: BoxDecoration(
-                    gradient: isSelected
-                        ? AppColors.habitGradients[_selectedColorIndex]
-                        : null,
-                    borderRadius: BorderRadius.circular(10),
-                    border: isSelected
-                        ? null
-                        : Border.all(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withAlpha(25),
-                          ),
-                  ),
-                  child: Icon(
-                    AppConstants.habitIcons[index],
-                    size: 24,
-                    color: isSelected
-                        ? Colors.white
-                        : Theme.of(context).colorScheme.onSurface.withAlpha(153),
+            if (suggestions.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  gradient: AppColors.primaryGradient,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  'AI Suggested',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
-              );
-            },
+              ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        
+        // Icon grid
+        GlassContainer(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            children: [
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 6,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                ),
+                itemCount: displayedIcons.length,
+                itemBuilder: (context, index) {
+                  final iconIndex = displayedIcons[index];
+                  final isSelected = iconIndex == _selectedIconIndex;
+                  final isSuggested = suggestedIndices.contains(iconIndex);
+                  
+                  return GestureDetector(
+                    onTap: () => setState(() => _selectedIconIndex = iconIndex),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      decoration: BoxDecoration(
+                        gradient: isSelected
+                            ? AppColors.habitGradients[_selectedColorIndex]
+                            : isSuggested
+                                ? LinearGradient(
+                                    colors: [
+                                      AppColors.primaryPurple.withOpacity(0.3),
+                                      AppColors.secondaryPink.withOpacity(0.3),
+                                    ],
+                                  )
+                                : null,
+                        borderRadius: BorderRadius.circular(12),
+                        border: isSelected
+                            ? Border.all(color: Colors.white, width: 2)
+                            : Border.all(
+                                color: isSuggested
+                                    ? AppColors.primaryPurple.withOpacity(0.5)
+                                    : Theme.of(context).colorScheme.onSurface.withAlpha(25),
+                                width: 1,
+                              ),
+                      ),
+                      child: Icon(
+                        AppConstants.habitIcons[iconIndex],
+                        size: 26,
+                        color: isSelected
+                            ? Colors.white
+                            : isSuggested
+                                ? AppColors.primaryPurple
+                                : Theme.of(context).colorScheme.onSurface.withAlpha(153),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              // Show all icons button
+              TextButton.icon(
+                onPressed: () => _showAllIconsPicker(),
+                icon: const Icon(Icons.grid_view, size: 18),
+                label: const Text('Browse All Icons'),
+              ),
+            ],
           ),
         ),
       ],
+    );
+  }
+  
+  void _showAllIconsPicker() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.7,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              const Text(
+                'All Icons',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 6,
+                    mainAxisSpacing: 10,
+                    crossAxisSpacing: 10,
+                  ),
+                  itemCount: AppConstants.habitIcons.length,
+                  itemBuilder: (context, index) {
+                    final isSelected = index == _selectedIconIndex;
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() => _selectedIconIndex = index);
+                        Navigator.pop(context);
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        decoration: BoxDecoration(
+                          gradient: isSelected
+                              ? AppColors.habitGradients[_selectedColorIndex]
+                              : null,
+                          borderRadius: BorderRadius.circular(12),
+                          border: isSelected
+                              ? Border.all(color: Colors.white, width: 2)
+                              : Border.all(
+                                  color: Theme.of(context).colorScheme.onSurface.withAlpha(25),
+                                ),
+                        ),
+                        child: Icon(
+                          AppConstants.habitIcons[index],
+                          size: 24,
+                          color: isSelected
+                              ? Colors.white
+                              : Theme.of(context).colorScheme.onSurface.withAlpha(153),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -938,7 +1080,7 @@ class _AddHabitScreenState extends State<AddHabitScreen> {
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  value: _badHabitValues[field.key] as String?,
+                  initialValue: _badHabitValues[field.key] as String?,
                   items: field.options!.map((option) {
                     return DropdownMenuItem(
                       value: option,

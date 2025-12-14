@@ -47,6 +47,10 @@ dependencies:
   uuid: ^4.2.2
   cupertino_icons: ^1.0.8
   file_picker: ^10.3.7
+  
+  # Database for auth
+  sqflite: ^2.3.0
+  crypto: ^3.0.3
 
 dev_dependencies:
   flutter_test:
@@ -61,6 +65,15 @@ flutter:
   # Crystal Stone Assets
   assets:
     - assets/stones/
+    - assets/avatars/Gemini_Generated_Image_1d8gtw1d8gtw1d8g.png
+    - assets/avatars/Gemini_Generated_Image_3wzusr3wzusr3wzu.png
+    - assets/avatars/Gemini_Generated_Image_6yaeg6yaeg6yaeg6.png
+    - assets/avatars/Gemini_Generated_Image_73wn1j73wn1j73wn.png
+    - assets/avatars/Gemini_Generated_Image_7ro6yx7ro6yx7ro6.png
+    - assets/avatars/Gemini_Generated_Image_he1ml7he1ml7he1m.png
+    - assets/avatars/Gemini_Generated_Image_kzsyvkzsyvkzsyvk.png
+    - assets/avatars/Gemini_Generated_Image_v27t6wv27t6wv27t.png
+    - assets/avatars/Gemini_Generated_Image_v4c5stv4c5stv4c5.png
   
   # Shaders for premium effects
   shaders:

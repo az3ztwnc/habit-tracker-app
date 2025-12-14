@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class OnboardingProvider extends ChangeNotifier {
   // User data
   String _userName = '';
-  String _userAvatar = '😊';
+  int _userAvatar = 0; // Avatar index
   List<String> _selectedGoals = [];
   List<String> _selectedGoodHabits = [];
   List<String> _selectedBadHabits = [];
@@ -14,7 +14,7 @@ class OnboardingProvider extends ChangeNotifier {
 
   // Getters
   String get userName => _userName;
-  String get userAvatar => _userAvatar;
+  int get userAvatar => _userAvatar;
   List<String> get selectedGoals => _selectedGoals;
   List<String> get selectedGoodHabits => _selectedGoodHabits;
   List<String> get selectedBadHabits => _selectedBadHabits;
@@ -28,7 +28,7 @@ class OnboardingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setUserAvatar(String avatar) {
+  void setUserAvatar(int avatar) {
     _userAvatar = avatar;
     notifyListeners();
   }
@@ -91,7 +91,7 @@ class OnboardingProvider extends ChangeNotifier {
     
     await prefs.setBool('onboarding_completed', true);
     await prefs.setString('user_name', _userName);
-    await prefs.setString('user_avatar', _userAvatar);
+    await prefs.setInt('user_avatar', _userAvatar);
     await prefs.setStringList('user_goals', _selectedGoals);
     await prefs.setStringList('selected_good_habits', _selectedGoodHabits);
     await prefs.setStringList('selected_bad_habits', _selectedBadHabits);
@@ -119,7 +119,7 @@ class OnboardingProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     
     _userName = prefs.getString('user_name') ?? 'User';
-    _userAvatar = prefs.getString('user_avatar') ?? '😊';
+    _userAvatar = prefs.getInt('user_avatar') ?? 0;
     _selectedGoals = prefs.getStringList('user_goals') ?? [];
     _selectedGoodHabits = prefs.getStringList('selected_good_habits') ?? [];
     _selectedBadHabits = prefs.getStringList('selected_bad_habits') ?? [];
@@ -131,7 +131,7 @@ class OnboardingProvider extends ChangeNotifier {
 
   void reset() {
     _userName = '';
-    _userAvatar = '😊';
+    _userAvatar = 0;
     _selectedGoals = [];
     _selectedGoodHabits = [];
     _selectedBadHabits = [];

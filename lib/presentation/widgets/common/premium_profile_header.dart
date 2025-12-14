@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/utils/avatar_manager.dart';
 import '../../../data/models/user_model.dart';
 
 class PremiumProfileHeader extends StatefulWidget {
@@ -445,41 +446,12 @@ class _PremiumProfileHeaderState extends State<PremiumProfileHeader>
         HapticFeedback.mediumImpact();
         widget.onAvatarTap?.call();
       },
-      child: SizedBox(
-        width: 64,
-        height: 64,
-        child: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                AppColors.primaryPurple,
-                AppColors.secondaryPink,
-              ],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primaryPurple.withOpacity(0.3),
-                blurRadius: 12,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: Center(
-            child: Text(
-              widget.user?.name.isNotEmpty == true
-                  ? widget.user!.name[0].toUpperCase()
-                  : 'U',
-              style: const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
+      child: AvatarManager.getAvatarWidget(
+        widget.user?.avatarIndex,
+        size: 64,
+        showBorder: true,
+        borderColor: AppColors.primaryPurple.withOpacity(0.6),
+        borderWidth: 3,
       ),
     );
   }

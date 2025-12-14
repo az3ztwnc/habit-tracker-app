@@ -10,6 +10,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/utils/avatar_manager.dart';
 import '../../../providers/habit_provider.dart';
 import '../../../providers/theme_provider.dart';
 import '../../../providers/auth_provider.dart';
@@ -58,71 +59,74 @@ class _SettingsScreenState extends State<SettingsScreen> {
           final user = habitProvider.user;
 
           return SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              FadeInDown(
-                duration: const Duration(milliseconds: 500),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    'Settings',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                FadeInDown(
+                  duration: const Duration(milliseconds: 500),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      'Settings',
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              // Profile section
-              FadeInUp(
-                duration: const Duration(milliseconds: 500),
-                delay: const Duration(milliseconds: 100),
-                child: _buildProfileSection(context, habitProvider, user),
-              ),
-              const SizedBox(height: 24),
-              // Appearance section
-              FadeInUp(
-                duration: const Duration(milliseconds: 500),
-                delay: const Duration(milliseconds: 200),
-                child: _buildAppearanceSection(context, themeProvider),
-              ),
-              const SizedBox(height: 24),
-              // Notifications section
-              FadeInUp(
-                duration: const Duration(milliseconds: 500),
-                delay: const Duration(milliseconds: 300),
-                child: _buildNotificationsSection(context, habitProvider, user),
-              ),
-              const SizedBox(height: 24),
-              // Data section
-              FadeInUp(
-                duration: const Duration(milliseconds: 500),
-                delay: const Duration(milliseconds: 350),
-                child: _buildDataSection(context, habitProvider),
-              ),
-              const SizedBox(height: 24),
-              // About section
-              FadeInUp(
-                duration: const Duration(milliseconds: 500),
-                delay: const Duration(milliseconds: 400),
-                child: _buildAboutSection(context),
-              ),
-              const SizedBox(height: 24),
-              // Account section
-              FadeInUp(
-                duration: const Duration(milliseconds: 500),
-                delay: const Duration(milliseconds: 450),
-                child: _buildAccountSection(context),
-              ),
-              const SizedBox(height: 100),
-            ],
-          ),
-        );
-      },
-    ),
+                const SizedBox(height: 24),
+                // Profile section
+                FadeInUp(
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 100),
+                  child: _buildProfileSection(context, habitProvider, user),
+                ),
+                const SizedBox(height: 24),
+                // Appearance section
+                FadeInUp(
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 200),
+                  child: _buildAppearanceSection(context, themeProvider),
+                ),
+                const SizedBox(height: 24),
+                // Notifications section
+                FadeInUp(
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 300),
+                  child: _buildNotificationsSection(
+                    context,
+                    habitProvider,
+                    user,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Data section
+                FadeInUp(
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 350),
+                  child: _buildDataSection(context, habitProvider),
+                ),
+                const SizedBox(height: 24),
+                // About section
+                FadeInUp(
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 400),
+                  child: _buildAboutSection(context),
+                ),
+                const SizedBox(height: 24),
+                // Account section
+                FadeInUp(
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 450),
+                  child: _buildAccountSection(context),
+                ),
+                const SizedBox(height: 100),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -138,48 +142,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           const Text(
             'Profile',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           GlassContainer(
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                // Avatar
+                // Avatar - Show actual selected avatar
                 GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();
                     _showAvatarPicker(context, habitProvider);
                   },
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.primaryPurple.withAlpha(76),
-                          blurRadius: 16,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        user?.name?.isNotEmpty == true 
-                            ? user!.name[0].toUpperCase()
-                            : 'U',
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                  child: AvatarManager.getAvatarWidget(
+                    user?.avatarIndex ?? 0,
+                    size: 80,
+                    showBorder: true,
+                    borderColor: AppColors.primaryPurple,
+                    borderWidth: 3,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -187,7 +168,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   'Tap to change avatar',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Theme.of(context).colorScheme.onSurface.withAlpha(153),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withAlpha(153),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -242,7 +225,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         Icon(
                           Icons.edit,
                           size: 18,
-                          color: Theme.of(context).colorScheme.onSurface.withAlpha(153),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withAlpha(153),
                         ),
                       ],
                     ),
@@ -250,9 +235,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 8),
                 // Level and XP
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onSurface.withAlpha(13),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withAlpha(13),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -297,10 +287,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           const Text(
             'Appearance',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           GlassContainer(
@@ -310,7 +297,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 // Theme toggle
                 _buildSettingsTile(
                   context,
-                  icon: themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                  icon: themeProvider.isDarkMode
+                      ? Icons.dark_mode
+                      : Icons.light_mode,
                   title: 'Dark Mode',
                   subtitle: themeProvider.isDarkMode ? 'On' : 'Off',
                   trailing: Switch(
@@ -363,10 +352,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           const Text(
             'Notifications & Feedback',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           GlassContainer(
@@ -377,25 +363,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   context,
                   icon: Icons.notifications,
                   title: 'Habit Reminders',
-                  subtitle: user?.notificationsEnabled == true ? 'Enabled' : 'Disabled',
+                  subtitle: user?.notificationsEnabled == true
+                      ? 'Enabled'
+                      : 'Disabled',
                   trailing: Switch(
                     value: user?.notificationsEnabled ?? true,
                     onChanged: (value) async {
                       HapticFeedback.lightImpact();
                       if (value) {
-                        final granted = await habitProvider.requestNotificationPermission();
+                        final granted = await habitProvider
+                            .requestNotificationPermission();
                         if (!granted) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Enable notification permission in settings'),
+                                content: Text(
+                                  'Enable notification permission in settings',
+                                ),
                               ),
                             );
                           }
                           setState(() {});
                           return;
                         }
-                        await habitProvider.updateUser(notificationsEnabled: true);
+                        await habitProvider.updateUser(
+                          notificationsEnabled: true,
+                        );
                       } else {
                         await habitProvider.disableAllNotifications();
                       }
@@ -407,7 +400,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   context,
                   icon: Icons.nightlight_round,
                   title: 'Quiet Hours',
-                  subtitle: '${_formatTime(_quietStart)} - ${_formatTime(_quietEnd)}',
+                  subtitle:
+                      '${_formatTime(_quietStart)} - ${_formatTime(_quietEnd)}',
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () async {
                     HapticFeedback.lightImpact();
@@ -448,10 +442,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildDataSection(
-    BuildContext context,
-    HabitProvider habitProvider,
-  ) {
+  Widget _buildDataSection(BuildContext context, HabitProvider habitProvider) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -459,10 +450,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           const Text(
             'Data & Privacy',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           GlassContainer(
@@ -518,10 +506,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           const Text(
             'About',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           GlassContainer(
@@ -559,9 +544,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     HapticFeedback.lightImpact();
-                    Clipboard.setData(const ClipboardData(text: 'Check out this Habit Tracker app!'));
+                    Clipboard.setData(
+                      const ClipboardData(
+                        text: 'Check out this Habit Tracker app!',
+                      ),
+                    );
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Share text copied to clipboard')),
+                      const SnackBar(
+                        content: Text('Share text copied to clipboard'),
+                      ),
                     );
                   },
                 ),
@@ -593,10 +584,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       title: Text(
         title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
       ),
       subtitle: subtitle != null
           ? Text(
@@ -613,59 +601,88 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showAvatarPicker(BuildContext context, HabitProvider habitProvider) {
+    int selectedIndex = habitProvider.user?.avatarIndex ?? 0;
+
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Choose Avatar',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 20),
-              GridView.builder(
-                shrinkWrap: true,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 6,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                ),
-                itemCount: AppConstants.avatarEmojis.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      habitProvider.updateUser(
-                        avatarEmoji: AppConstants.avatarEmojis[index],
-                      );
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.onSurface.withAlpha(13),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                        child: Text(
-                          AppConstants.avatarEmojis[index],
-                          style: const TextStyle(fontSize: 28),
-                        ),
-                      ),
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Container(
+              padding: const EdgeInsets.all(20),
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: Column(
+                children: [
+                  const Text(
+                    'Choose Avatar',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: 16,
+                            crossAxisSpacing: 16,
+                          ),
+                      itemCount: AppConstants.avatarImages.length,
+                      itemBuilder: (context, index) {
+                        final isSelected = index == selectedIndex;
+                        return GestureDetector(
+                          onTap: () {
+                            setModalState(() => selectedIndex = index);
+                            habitProvider.updateUser(avatarIndex: index);
+                            Navigator.pop(context);
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: isSelected
+                                    ? AppColors.primaryPurple
+                                    : Colors.transparent,
+                                width: 3,
+                              ),
+                              boxShadow: isSelected
+                                  ? [
+                                      BoxShadow(
+                                        color: AppColors.primaryPurple
+                                            .withOpacity(0.4),
+                                        blurRadius: 12,
+                                      ),
+                                    ]
+                                  : [],
+                            ),
+                            child: ClipOval(
+                              child: Image.asset(
+                                AppConstants.avatarImages[index],
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.grey,
+                                    child: const Icon(
+                                      Icons.person,
+                                      color: Colors.white,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -685,48 +702,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               const Text(
                 'Choose Accent Color',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
               Wrap(
                 spacing: 16,
                 runSpacing: 16,
-                children: List.generate(
-                  AppColors.habitColors.length,
-                  (index) {
-                    final isSelected = index == themeProvider.accentColorIndex;
-                    return GestureDetector(
-                      onTap: () {
-                        themeProvider.setAccentColor(index);
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: AppColors.habitColors[index],
-                          shape: BoxShape.circle,
-                          border: isSelected
-                              ? Border.all(color: Colors.white, width: 3)
-                              : null,
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.habitColors[index].withAlpha(102),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: isSelected
-                            ? const Icon(Icons.check, color: Colors.white)
+                children: List.generate(AppColors.habitColors.length, (index) {
+                  final isSelected = index == themeProvider.accentColorIndex;
+                  return GestureDetector(
+                    onTap: () {
+                      themeProvider.setAccentColor(index);
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: AppColors.habitColors[index],
+                        shape: BoxShape.circle,
+                        border: isSelected
+                            ? Border.all(color: Colors.white, width: 3)
                             : null,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.habitColors[index].withAlpha(102),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    );
-                  },
-                ),
+                      child: isSelected
+                          ? const Icon(Icons.check, color: Colors.white)
+                          : null,
+                    ),
+                  );
+                }),
               ),
               const SizedBox(height: 20),
             ],
@@ -794,7 +805,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Navigator.of(context).pop();
               }
             },
-            style: TextButton.styleFrom(foregroundColor: const Color(0xFFEF4444)),
+            style: TextButton.styleFrom(
+              foregroundColor: const Color(0xFFEF4444),
+            ),
             child: const Text('Clear All'),
           ),
         ],
@@ -805,7 +818,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildAccountSection(BuildContext context) {
     final authProvider = context.read<AuthProvider>();
     final userEmail = authProvider.userEmail;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -813,10 +826,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           const Text(
             'Account',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
           GlassContainer(
@@ -850,9 +860,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showLogoutDialog(BuildContext context) {
+    // Capture providers before showing dialog to avoid context issues
+    final authProvider = context.read<AuthProvider>();
+    final habitProvider = context.read<HabitProvider>();
+    bool isProcessing = false;
+
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Row(
           children: [
@@ -866,21 +881,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
-              final authProvider = context.read<AuthProvider>();
-              final habitProvider = context.read<HabitProvider>();
+              if (isProcessing) return;
+              isProcessing = true;
+              Navigator.pop(dialogContext);
               await authProvider.signOut();
               await habitProvider.clearAllData();
-              if (context.mounted) {
-                Navigator.of(context).popUntil((route) => route.isFirst);
-              }
+              // The app will automatically show LoginScreen because auth state changed
             },
-            style: TextButton.styleFrom(foregroundColor: AppColors.primaryPurple),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.primaryPurple,
+            ),
             child: const Text('Sign Out'),
           ),
         ],
@@ -912,7 +927,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
-  Future<void> _savePrefs({bool? sounds, bool? haptics, TimeOfDay? start, TimeOfDay? end}) async {
+  Future<void> _savePrefs({
+    bool? sounds,
+    bool? haptics,
+    TimeOfDay? start,
+    TimeOfDay? end,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     bool quietChanged = false;
     if (sounds != null) {
@@ -945,7 +965,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
   }
 
-  String _formatPrefsTime(TimeOfDay time) => '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  String _formatPrefsTime(TimeOfDay time) =>
+      '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
 
   String _formatTime(TimeOfDay time) {
     final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
@@ -955,7 +976,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _pickQuietHours() async {
-    final start = await showTimePicker(context: context, initialTime: _quietStart);
+    final start = await showTimePicker(
+      context: context,
+      initialTime: _quietStart,
+    );
     if (start == null) return;
     final end = await showTimePicker(context: context, initialTime: _quietEnd);
     if (end == null) return;
@@ -985,36 +1009,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'unlockedStones': user.unlockedStones,
             },
       'habits': habits
-          .map((h) => {
-                'id': h.id,
-                'name': h.name,
-                'description': h.description,
-                'iconIndex': h.iconIndex,
-                'colorIndex': h.colorIndex,
-                'category': h.category,
-                'scheduledDays': h.scheduledDays,
-                'targetDaysPerWeek': h.targetDaysPerWeek,
-                'createdAt': h.createdAt.toIso8601String(),
-                'reminderTime': h.reminderTime,
-                'isArchived': h.isArchived,
-                'currentStreak': h.currentStreak,
-                'longestStreak': h.longestStreak,
-                'totalCompletions': h.totalCompletions,
-                'completedDates': h.completedDates,
-                'isQuitHabit': h.isQuitHabit,
-                'quitStartDate': h.quitStartDate?.toIso8601String(),
-                'moneySavedPerDay': h.moneySavedPerDay,
-                'relapses': h.relapses?.map((d) => d.toIso8601String()).toList(),
-              })
+          .map(
+            (h) => {
+              'id': h.id,
+              'name': h.name,
+              'description': h.description,
+              'iconIndex': h.iconIndex,
+              'colorIndex': h.colorIndex,
+              'category': h.category,
+              'scheduledDays': h.scheduledDays,
+              'targetDaysPerWeek': h.targetDaysPerWeek,
+              'createdAt': h.createdAt.toIso8601String(),
+              'reminderTime': h.reminderTime,
+              'isArchived': h.isArchived,
+              'currentStreak': h.currentStreak,
+              'longestStreak': h.longestStreak,
+              'totalCompletions': h.totalCompletions,
+              'completedDates': h.completedDates,
+              'isQuitHabit': h.isQuitHabit,
+              'quitStartDate': h.quitStartDate?.toIso8601String(),
+              'moneySavedPerDay': h.moneySavedPerDay,
+              'relapses': h.relapses?.map((d) => d.toIso8601String()).toList(),
+            },
+          )
           .toList(),
     };
 
     await file.writeAsString(jsonEncode(data));
 
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Backup saved to ${file.path}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Backup saved to ${file.path}')));
     }
   }
 
@@ -1024,14 +1050,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       dialogTitle: 'Select Habit Backup',
       type: FileType.custom,
       allowedExtensions: const ['json'],
-      initialDirectory: (Platform.isAndroid || Platform.isIOS) ? null : dir.path,
+      initialDirectory: (Platform.isAndroid || Platform.isIOS)
+          ? null
+          : dir.path,
     );
 
     if (result == null || result.files.single.path == null) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No backup selected')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('No backup selected')));
       }
       return;
     }
@@ -1039,9 +1067,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final file = File(result.files.single.path!);
     if (!await file.exists()) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('File not found: ${file.path}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('File not found: ${file.path}')));
       }
       return;
     }

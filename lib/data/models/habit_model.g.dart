@@ -32,7 +32,7 @@ class HabitModelAdapter extends TypeAdapter<HabitModel> {
       longestStreak: fields[12] as int,
       totalCompletions: fields[13] as int,
       completedDates: (fields[14] as List?)?.cast<String>(),
-      isQuitHabit: fields[15] == null ? false : fields[15] as bool,
+      isQuitHabit: fields[15] as bool,
       quitStartDate: fields[16] as DateTime?,
       moneySavedPerDay: fields[17] as double?,
       relapses: (fields[18] as List?)?.cast<DateTime>(),

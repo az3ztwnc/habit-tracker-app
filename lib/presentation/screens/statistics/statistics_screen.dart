@@ -123,60 +123,118 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   Widget _buildStatsCards(BuildContext context, HabitProvider provider) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+    return const SizedBox.shrink(); // Removed stats cards as requested
+  }
+
+  Widget _buildWeeklySuccessCard(BuildContext context, HabitProvider provider) {
+    final completionRate = provider.getThisWeekCompletionRate();
+    final completedThisWeek = provider.getThisWeekCompletedCount();
+    final totalThisWeek = provider.getThisWeekTotalCount();
+    
+    return GlassContainer(
+      padding: const EdgeInsets.all(20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Expanded(
-                child: _buildStatCard(
-                  context,
-                  'Total Completions',
-                  provider.totalCompletions.toString(),
-                  Icons.check_circle,
-                  AppColors.primaryGradient,
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  gradient: AppColors.greenCyanGradient,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.analytics,
+                  color: Colors.white,
+                  size: 24,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               Expanded(
-                child: _buildStatCard(
-                  context,
-                  'Longest Streak',
-                  '${provider.longestStreak} days',
-                  Icons.local_fire_department,
-                  AppColors.pinkOrangeGradient,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'This Week Performance',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$completedThisWeek of $totalThisWeek completed',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.onSurface.withAlpha(153),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  gradient: _getPerformanceGradient(completionRate),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Text(
+                  '${(completionRate * 100).toInt()}%',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatCard(
-                  context,
-                  'Total Habits',
-                  provider.totalHabits.toString(),
-                  Icons.list_alt,
-                  AppColors.cyanPurpleGradient,
+          const SizedBox(height: 16),
+          // Progress bar
+          Container(
+            height: 8,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: FractionallySizedBox(
+              widthFactor: completionRate.clamp(0.0, 1.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: _getPerformanceGradient(completionRate),
+                  borderRadius: BorderRadius.circular(4),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatCard(
-                  context,
-                  'Current Level',
-                  'Level ${provider.level}',
-                  Icons.star,
-                  AppColors.greenCyanGradient,
-                ),
-              ),
-            ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _getPerformanceMessage(completionRate),
+            style: TextStyle(
+              fontSize: 12,
+              color: Theme.of(context).colorScheme.onSurface.withAlpha(153),
+            ),
           ),
         ],
       ),
     );
+  }
+
+  LinearGradient _getPerformanceGradient(double rate) {
+    if (rate >= 0.8) return AppColors.greenCyanGradient;
+    if (rate >= 0.6) return AppColors.greenCyanGradient;
+    if (rate >= 0.4) return AppColors.cyanPurpleGradient;
+    return AppColors.pinkOrangeGradient;
+  }
+
+  String _getPerformanceMessage(double rate) {
+    if (rate >= 0.9) return 'Excellent! Keep up the amazing work! 🔥';
+    if (rate >= 0.7) return 'Great progress! You\'re doing well! 💪';
+    if (rate >= 0.5) return 'Good effort! Room for improvement! 📈';
+    if (rate >= 0.3) return 'Getting started! Keep pushing! 🌱';
+    return 'Don\'t give up! Every step counts! 💙';
   }
 
   Widget _buildStatCard(
@@ -319,7 +377,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 ],
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );

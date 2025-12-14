@@ -20,26 +20,30 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       id: fields[0] as String,
       name: fields[1] as String,
       avatarEmoji: fields[2] as String,
+      avatarIndex: fields[11] as int?,
       totalXP: fields[3] as int,
-      createdAt: fields[4] as DateTime,
+      createdAt: fields[4] as DateTime?,
       hasCompletedOnboarding: fields[5] as bool,
       isDarkMode: fields[6] as bool,
       accentColorIndex: fields[7] as int,
       notificationsEnabled: fields[8] as bool,
       unlockedAchievements: (fields[9] as List?)?.cast<String>(),
+      unlockedStones: (fields[10] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserModel obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
       ..write(obj.name)
       ..writeByte(2)
       ..write(obj.avatarEmoji)
+      ..writeByte(11)
+      ..write(obj.avatarIndex)
       ..writeByte(3)
       ..write(obj.totalXP)
       ..writeByte(4)
@@ -53,7 +57,9 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       ..writeByte(8)
       ..write(obj.notificationsEnabled)
       ..writeByte(9)
-      ..write(obj.unlockedAchievements);
+      ..write(obj.unlockedAchievements)
+      ..writeByte(10)
+      ..write(obj.unlockedStones);
   }
 
   @override

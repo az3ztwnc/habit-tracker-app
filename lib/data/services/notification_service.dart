@@ -65,59 +65,89 @@ class NotificationService {
     return true;
   }
 
+  // Ensure notification ID fits within 32-bit signed integer range
+  int _safeNotificationId(int id) {
+    // Use modulo to fit within 32-bit signed positive range (0 to 2^30 - 1)
+    // We use 2^30 instead of 2^31 to leave room for day offsets
+    return (id.abs() % 100000000);
+  }
+
   Future<void> scheduleHabitReminder({
     required int id,
     required String habitName,
     required String time, // HH:mm format
     required List<int> days, // 0 = Monday, 6 = Sunday
   }) async {
-    await _refreshQuietHours();
-    await cancelNotification(id);
-
-    final parts = time.split(':');
-    final hour = int.parse(parts[0]);
-    final minute = int.parse(parts[1]);
-
-    for (var day in days) {
-      final weekDay = day + 1; // Convert to 1 = Monday, 7 = Sunday
+    try {
+      await _refreshQuietHours();
       
-      final scheduledTime = _applyQuietHours(
-        _nextInstanceOfDay(weekDay, hour, minute),
-      );
+      // Convert to safe 32-bit ID
+      final safeId = _safeNotificationId(id);
+      await cancelNotification(safeId);
 
-      await _notifications.zonedSchedule(
-        id * 10 + day, // Unique ID for each day
-        'Habit Reminder',
-        "Time to complete: $habitName",
-        scheduledTime,
-        NotificationDetails(
-          android: AndroidNotificationDetails(
-            'habit_reminders',
-            'Habit Reminders',
-            channelDescription: 'Reminders for your habits',
-            importance: Importance.high,
-            priority: Priority.high,
-            icon: '@mipmap/ic_launcher',
-          ),
-          iOS: const DarwinNotificationDetails(
-            presentAlert: true,
-            presentBadge: true,
-            presentSound: true,
-          ),
-        ),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-        matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
-      );
+      final parts = time.split(':');
+      final hour = int.tryParse(parts[0]) ?? 9;
+      final minute = int.tryParse(parts[1]) ?? 0;
+
+      for (var day in days) {
+        final weekDay = day + 1; // Convert to 1 = Monday, 7 = Sunday
+        
+        // Skip invalid days
+        if (weekDay < 1 || weekDay > 7) continue;
+        
+        final scheduledTime = _applyQuietHours(
+          _nextInstanceOfDay(weekDay, hour, minute),
+        );
+
+        try {
+          await _notifications.zonedSchedule(
+            safeId * 10 + day, // Unique ID for each day
+            'Habit Reminder',
+            "Time to complete: $habitName",
+            scheduledTime,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                'habit_reminders',
+                'Habit Reminders',
+                channelDescription: 'Reminders for your habits',
+                importance: Importance.high,
+                priority: Priority.high,
+                icon: '@mipmap/ic_launcher',
+              ),
+              iOS: const DarwinNotificationDetails(
+                presentAlert: true,
+                presentBadge: true,
+                presentSound: true,
+              ),
+            ),
+            androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+            uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+            matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+          );
+        } catch (e) {
+          // Silently fail if exact alarms are not permitted
+        }
+      }
+    } catch (e) {
+      // Silently fail - notifications are not critical
+      print('Failed to schedule notification: $e');
     }
   }
 
   tz.TZDateTime _nextInstanceOfDay(int weekDay, int hour, int minute) {
+    // Validate weekDay (1-7 in DateTime, 1=Monday, 7=Sunday)
+    if (weekDay < 1 || weekDay > 7) {
+      weekDay = 1; // Default to Monday if invalid
+    }
+    
     final now = tz.TZDateTime.now(tz.local);
     var scheduled = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
 
-    while (scheduled.weekday != weekDay || scheduled.isBefore(now)) {
+    // Safety limit to prevent infinite loop
+    int maxIterations = 8;
+    while ((scheduled.weekday != weekDay || scheduled.isBefore(now)) && maxIterations > 0) {
       scheduled = scheduled.add(const Duration(days: 1));
+      maxIterations--;
     }
 
     return scheduled;
@@ -198,9 +228,15 @@ class NotificationService {
   }
 
   Future<void> cancelNotification(int id) async {
+    // Convert to safe 32-bit ID
+    final safeId = _safeNotificationId(id);
     // Cancel all day-specific notifications for this habit
     for (var day = 0; day < 7; day++) {
-      await _notifications.cancel(id * 10 + day);
+      try {
+        await _notifications.cancel(safeId * 10 + day);
+      } catch (e) {
+        // Ignore errors when canceling non-existent notifications
+      }
     }
   }
 

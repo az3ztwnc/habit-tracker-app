@@ -7,6 +7,7 @@ import 'package:iconsax/iconsax.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/currencies.dart';
 import '../../../core/constants/avatars.dart';
+import '../../../core/utils/avatar_manager.dart';
 import '../../../data/models/stone_model.dart';
 import '../../../providers/habit_provider.dart';
 import '../../widgets/common/galaxy_background.dart';
@@ -22,47 +23,25 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String _userName = 'User';
-  String _userAvatar = 'gradient_purple_star';
-  DateTime? _joinDate;
   Currency _selectedCurrency = Currencies.defaultCurrency;
   String _selectedPeriod = 'Week';
   final ScrollController _scrollController = ScrollController();
-  double _scrollProgress = 0.0;
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-    _scrollController.addListener(_onScroll);
+    _loadCurrencyPreference();
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _onScroll() {
-    if (_scrollController.hasClients) {
-      final maxScroll = _scrollController.position.maxScrollExtent;
-      final currentScroll = _scrollController.offset;
-      setState(() {
-        _scrollProgress = maxScroll > 0 ? (currentScroll / maxScroll).clamp(0.0, 1.0) : 0.0;
-      });
-    }
-  }
-
-  Future<void> _loadUserData() async {
+  Future<void> _loadCurrencyPreference() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _userName = prefs.getString('user_name') ?? 'User';
-      _userAvatar = prefs.getString('user_avatar') ?? 'gradient_purple_star';
-      final joinDateStr = prefs.getString('join_date');
-      if (joinDateStr != null) {
-        _joinDate = DateTime.parse(joinDateStr);
-      }
       final currencyCode = prefs.getString('selected_currency') ?? 'USD';
       _selectedCurrency = Currencies.getByCode(currencyCode);
     });
@@ -160,11 +139,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               color: AppColors.darkCard,
                             ),
                             padding: const EdgeInsets.all(8),
-                            child: GradientAvatarBuilder(
-                              seed: _userAvatar,
+                            child: AvatarManager.getAvatarWidget(
+                              user?.avatarIndex ?? 0,
                               size: 64,
-                              gradientColors: PremiumAvatars.getById(_userAvatar)?.gradientColors,
-                              icon: PremiumAvatars.getById(_userAvatar)?.icon,
+                              showBorder: false,
                             ),
                           ),
                         ),
@@ -172,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         
                         // Username
                         Text(
-                          _userName,
+                          user?.name ?? 'User',
                           style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,

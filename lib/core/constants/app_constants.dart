@@ -32,33 +32,311 @@ class AppConstants {
     '🐱', '🐶', '🦊', '🐼', '🐨', '🦁', '🐯', '🐸',
   ];
 
-  // Habit icons
-  static const List<IconData> habitIcons = [
-    Icons.fitness_center,
-    Icons.book,
-    Icons.water_drop,
-    Icons.bedtime,
-    Icons.restaurant,
-    Icons.self_improvement,
-    Icons.directions_run,
-    Icons.code,
-    Icons.music_note,
-    Icons.brush,
-    Icons.work,
-    Icons.school,
-    Icons.local_cafe,
-    Icons.movie,
-    Icons.pets,
-    Icons.eco,
-    Icons.spa,
-    Icons.savings,
-    Icons.phone_android,
-    Icons.timer,
-    Icons.local_florist,
-    Icons.psychology,
-    Icons.favorite,
-    Icons.star,
+  // Avatar image paths from assets
+  static const List<String> avatarImages = [
+    'assets/avatars/Gemini_Generated_Image_1d8gtw1d8gtw1d8g.png',
+    'assets/avatars/Gemini_Generated_Image_3wzusr3wzusr3wzu.png',
+    'assets/avatars/Gemini_Generated_Image_6yaeg6yaeg6yaeg6.png',
+    'assets/avatars/Gemini_Generated_Image_73wn1j73wn1j73wn.png',
+    'assets/avatars/Gemini_Generated_Image_7ro6yx7ro6yx7ro6.png',
+    'assets/avatars/Gemini_Generated_Image_he1ml7he1ml7he1m.png',
+    'assets/avatars/Gemini_Generated_Image_kzsyvkzsyvkzsyvk.png',
+    'assets/avatars/Gemini_Generated_Image_v27t6wv27t6wv27t.png',
+    'assets/avatars/Gemini_Generated_Image_v4c5stv4c5stv4c5.png',
   ];
+
+  // Comprehensive habit icons (120+ icons covering all possible habits)
+  static const List<IconData> habitIcons = [
+    // Fitness & Exercise (0-19)
+    Icons.fitness_center, // 0
+    Icons.directions_run, // 1
+    Icons.directions_walk, // 2
+    Icons.directions_bike, // 3
+    Icons.pool, // 4
+    Icons.sports_tennis, // 5
+    Icons.sports_soccer, // 6
+    Icons.sports_basketball, // 7
+    Icons.sports_gymnastics, // 8
+    Icons.sports_martial_arts, // 9
+    Icons.sports_volleyball, // 10
+    Icons.sports_golf, // 11
+    Icons.sports_baseball, // 12
+    Icons.sports_football, // 13
+    Icons.sports_hockey, // 14
+    Icons.hiking, // 15
+    Icons.downhill_skiing, // 16
+    Icons.snowboarding, // 17
+    Icons.kayaking, // 18
+    Icons.surfing, // 19
+
+    // Health & Wellness (20-39)
+    Icons.water_drop, // 20
+    Icons.bedtime, // 21
+    Icons.spa, // 22
+    Icons.self_improvement, // 23
+    Icons.psychology, // 24
+    Icons.healing, // 25
+    Icons.medical_services, // 26
+    Icons.medication, // 27
+    Icons.heart_broken, // 28
+    Icons.favorite, // 29
+    Icons.air, // 30
+    Icons.wb_sunny, // 31
+    Icons.nightlight, // 32
+    Icons.thermostat, // 33
+    Icons.sanitizer, // 34
+    Icons.masks, // 35
+    Icons.monitor_weight, // 36
+    Icons.scale, // 37
+    Icons.bloodtype, // 38
+    Icons.vaccines, // 39
+
+    // Food & Nutrition (40-59)
+    Icons.restaurant, // 40
+    Icons.local_cafe, // 41
+    Icons.local_bar, // 42
+    Icons.local_dining, // 43
+    Icons.local_pizza, // 44
+    Icons.coffee, // 45
+    Icons.wine_bar, // 46
+    Icons.lunch_dining, // 47
+    Icons.dinner_dining, // 48
+    Icons.breakfast_dining, // 49
+    Icons.kitchen, // 50
+    Icons.soup_kitchen, // 51
+    Icons.bakery_dining, // 52
+    Icons.icecream, // 53
+    Icons.cake, // 54
+    Icons.apple, // 55
+    Icons.set_meal, // 56
+    Icons.takeout_dining, // 57
+    Icons.ramen_dining, // 58
+    Icons.fastfood, // 59
+
+    // Learning & Education (60-79)
+    Icons.book, // 60
+    Icons.school, // 61
+    Icons.library_books, // 62
+    Icons.auto_stories, // 63
+    Icons.quiz, // 64
+    Icons.calculate, // 65
+    Icons.science, // 66
+    Icons.psychology, // 67
+    Icons.translate, // 68
+    Icons.language, // 69
+    Icons.history_edu, // 70
+    Icons.biotech, // 71
+    Icons.engineering, // 72
+    Icons.architecture, // 73
+    Icons.construction, // 74
+    Icons.memory, // 75
+    Icons.lightbulb, // 76
+    Icons.tips_and_updates, // 77
+    Icons.emoji_objects, // 78
+    Icons.school_outlined, // 79
+
+    // Technology & Digital (80-99)
+    Icons.code, // 80
+    Icons.computer, // 81
+    Icons.phone_android, // 82
+    Icons.tablet, // 83
+    Icons.laptop, // 84
+    Icons.desktop_windows, // 85
+    Icons.keyboard, // 86
+    Icons.mouse, // 87
+    Icons.developer_mode, // 88
+    Icons.bug_report, // 89
+    Icons.web, // 90
+    Icons.cloud, // 91
+    Icons.storage, // 92
+    Icons.security, // 93
+    Icons.wifi, // 94
+    Icons.bluetooth, // 95
+    Icons.usb, // 96
+    Icons.memory, // 97
+    Icons.smart_toy, // 98
+    Icons.videogame_asset, // 99
+
+    // Creative Arts (100-119)
+    Icons.brush, // 100
+    Icons.music_note, // 101
+    Icons.palette, // 102
+    Icons.draw, // 103
+    Icons.edit, // 104
+    Icons.camera, // 105
+    Icons.photo_camera, // 106
+    Icons.video_camera_back, // 107
+    Icons.movie, // 108
+    Icons.theater_comedy, // 109
+    Icons.piano, // 110
+    Icons.music_note, // 111
+    Icons.mic, // 112
+    Icons.headphones, // 113
+    Icons.audio_file, // 114
+    Icons.album, // 115
+    Icons.color_lens, // 116
+    Icons.format_paint, // 117
+    Icons.auto_awesome, // 118
+    Icons.photo_filter, // 119
+
+    // Work & Productivity (120-139)
+    Icons.work, // 120
+    Icons.business, // 121
+    Icons.timer, // 122
+    Icons.schedule, // 123
+    Icons.today, // 124
+    Icons.event, // 125
+    Icons.calendar_today, // 126
+    Icons.alarm, // 127
+    Icons.access_time, // 128
+    Icons.hourglass_empty, // 129
+    Icons.pending_actions, // 130
+    Icons.task_alt, // 131
+    Icons.check_circle, // 132
+    Icons.done_all, // 133
+    Icons.assignment, // 134
+    Icons.description, // 135
+    Icons.note_add, // 136
+    Icons.sticky_note_2, // 137
+    Icons.folder, // 138
+    Icons.archive, // 139
+
+    // Social & Communication (140-159)
+    Icons.people, // 140
+    Icons.person, // 141
+    Icons.group, // 142
+    Icons.family_restroom, // 143
+    Icons.child_friendly, // 144
+    Icons.elderly, // 145
+    Icons.sentiment_satisfied, // 146
+    Icons.mood, // 147
+    Icons.sentiment_very_satisfied, // 148
+    Icons.tag_faces, // 149
+    Icons.phone, // 150
+    Icons.call, // 151
+    Icons.video_call, // 152
+    Icons.chat, // 153
+    Icons.message, // 154
+    Icons.email, // 155
+    Icons.forum, // 156
+    Icons.comment, // 157
+    Icons.feedback, // 158
+    Icons.support_agent, // 159
+
+    // Finance & Money (160-179)
+    Icons.savings, // 160
+    Icons.account_balance_wallet, // 161
+    Icons.account_balance, // 162
+    Icons.credit_card, // 163
+    Icons.payment, // 164
+    Icons.money, // 165
+    Icons.currency_exchange, // 166
+    Icons.attach_money, // 167
+    Icons.local_atm, // 168
+    Icons.point_of_sale, // 169
+    Icons.receipt, // 170
+    Icons.shopping_cart, // 171
+    Icons.shopping_bag, // 172
+    Icons.store, // 173
+    Icons.storefront, // 174
+    Icons.inventory, // 175
+    Icons.calculate, // 176
+    Icons.trending_up, // 177
+    Icons.trending_down, // 178
+    Icons.show_chart, // 179
+
+    // Nature & Environment (180-199)
+    Icons.eco, // 180
+    Icons.local_florist, // 181
+    Icons.forest, // 182
+    Icons.park, // 183
+    Icons.grass, // 184
+    Icons.yard, // 185
+    Icons.nature, // 186
+    Icons.landscape, // 187
+    Icons.landscape, // 188
+    Icons.terrain, // 189
+    Icons.waves, // 190
+    Icons.beach_access, // 191
+    Icons.wb_cloudy, // 192
+    Icons.wb_sunny, // 193
+    Icons.nights_stay, // 194
+    Icons.star, // 195
+    Icons.pets, // 196
+    Icons.cruelty_free, // 197
+    Icons.recycling, // 198
+    Icons.energy_savings_leaf, // 199
+
+    // Hobbies & Entertainment (200-219)
+    Icons.games, // 200
+    Icons.casino, // 201
+    Icons.extension, // 202
+    Icons.extension, // 203
+    Icons.sports_esports, // 204
+    Icons.toys, // 205
+    Icons.rocket_launch, // 206
+    Icons.celebration, // 207
+    Icons.party_mode, // 208
+    Icons.cake, // 209
+    Icons.weekend, // 210
+    Icons.holiday_village, // 211
+    Icons.festival, // 212
+    Icons.local_activity, // 213
+    Icons.attractions, // 214
+    Icons.attractions, // 215
+    Icons.roller_skating, // 216
+    Icons.ice_skating, // 217
+    Icons.skateboarding, // 218
+    Icons.snowshoeing, // 219
+
+    // Transportation & Travel (220-239)
+    Icons.directions_car, // 220
+    Icons.train, // 221
+    Icons.flight, // 222
+    Icons.directions_bus, // 223
+    Icons.directions_subway, // 224
+    Icons.motorcycle, // 225
+    Icons.electric_scooter, // 226
+    Icons.pedal_bike, // 227
+    Icons.sailing, // 228
+    Icons.directions_boat, // 229
+    Icons.map, // 230
+    Icons.navigation, // 231
+    Icons.explore, // 232
+    Icons.travel_explore, // 233
+    Icons.luggage, // 234
+    Icons.hotel, // 235
+    Icons.apartment, // 236
+    Icons.home, // 237
+    Icons.location_city, // 238
+    Icons.public, // 239
+
+    // Miscellaneous (240+)
+    Icons.cleaning_services, // 240
+    Icons.build, // 241
+    Icons.handyman, // 242
+    Icons.plumbing, // 243
+    Icons.electrical_services, // 244
+    Icons.carpenter, // 245
+    Icons.hardware, // 246
+    Icons.agriculture, // 247
+    Icons.volunteer_activism, // 248
+    Icons.favorite_border, // 249
+    Icons.star_border, // 250
+    Icons.bookmark, // 251
+    Icons.flag, // 252
+    Icons.lightbulb_outline, // 253
+    Icons.emoji_nature, // 254
+    Icons.emoji_food_beverage, // 255
+  ];
+
+  // Get avatar by index (image or emoji fallback)
+  static String getAvatar(int index, {bool forceEmoji = false}) {
+    if (forceEmoji || index >= avatarImages.length) {
+      return avatarEmojis[index % avatarEmojis.length];
+    }
+    return avatarImages[index % avatarImages.length];
+  }
 
   // Days of week
   static const List<String> daysOfWeek = [

@@ -13,6 +13,9 @@ class UserModel extends HiveObject {
   @HiveField(2)
   String avatarEmoji;
 
+  @HiveField(11)
+  int? avatarIndex;
+
   @HiveField(3)
   int totalXP;
 
@@ -41,6 +44,7 @@ class UserModel extends HiveObject {
     required this.id,
     required this.name,
     this.avatarEmoji = '😊',
+    this.avatarIndex,
     this.totalXP = 0,
     DateTime? createdAt,
     this.hasCompletedOnboarding = false,
@@ -87,6 +91,7 @@ class UserModel extends HiveObject {
     String? id,
     String? name,
     String? avatarEmoji,
+    int? avatarIndex,
     int? totalXP,
     DateTime? createdAt,
     bool? hasCompletedOnboarding,
@@ -100,6 +105,7 @@ class UserModel extends HiveObject {
       id: id ?? this.id,
       name: name ?? this.name,
       avatarEmoji: avatarEmoji ?? this.avatarEmoji,
+      avatarIndex: avatarIndex ?? this.avatarIndex,
       totalXP: totalXP ?? this.totalXP,
       createdAt: createdAt ?? this.createdAt,
       hasCompletedOnboarding: hasCompletedOnboarding ?? this.hasCompletedOnboarding,

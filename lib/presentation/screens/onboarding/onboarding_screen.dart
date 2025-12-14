@@ -12,6 +12,7 @@ import '../../../providers/habit_provider.dart';
 import '../../../providers/onboarding_provider.dart';
 import '../../widgets/common/gradient_button.dart';
 import '../../widgets/common/galaxy_background.dart';
+import '../../../core/utils/avatar_manager.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -359,40 +360,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
+              // Avatar Selection using AvatarManager
+              Container(
+                height: 300,
+                child: SingleChildScrollView(
+                  child: AvatarManager.buildSectionedAvatarSelection(
+                    selectedIndex: provider.userAvatar,
+                    onAvatarSelected: (index) => provider.setUserAvatar(index),
+                    avatarSize: 55,
+                    crossAxisCount: 4,
+                    spacing: 12,
+                  ),
                 ),
-                itemCount: PremiumAvatars.options.length,
-                itemBuilder: (context, index) {
-                  final avatarOption = PremiumAvatars.options[index];
-                  final isSelected = provider.userAvatar == avatarOption.id;
-                  return GestureDetector(
-                    onTap: () => provider.setUserAvatar(avatarOption.id),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: isSelected
-                              ? AppColors.primaryPurple
-                              : Colors.transparent,
-                          width: 3,
-                        ),
-                      ),
-                      child: GradientAvatarBuilder(
-                        seed: avatarOption.id,
-                        size: 60,
-                        gradientColors: avatarOption.gradientColors,
-                        icon: avatarOption.icon,
-                      ),
-                    ),
-                  );
-                },
               ),
               const SizedBox(height: 40),
               GradientButton(
