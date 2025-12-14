@@ -38,11 +38,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _loadUserNameFromSignup() async {
+    if (!mounted) return;
+    
     final provider = Provider.of<OnboardingProvider>(context, listen: false);
     final prefs = await SharedPreferences.getInstance();
     final nameFromSignup = prefs.getString('user_name') ?? '';
     
-    if (nameFromSignup.isNotEmpty && provider.userName.isEmpty) {
+    if (mounted && nameFromSignup.isNotEmpty && provider.userName.isEmpty) {
       _nameController.text = nameFromSignup;
       provider.setUserName(nameFromSignup);
     }
@@ -82,10 +84,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     
     // Update user name and avatar in HabitProvider
     final habitProvider = context.read<HabitProvider>();
-    await habitProvider.updateUser(
-      name: onboardingProvider.userName,
-      avatarIndex: onboardingProvider.userAvatar,
-    );
+    try {
+      await habitProvider.updateUser(
+        name: onboardingProvider.userName,
+        avatarIndex: onboardingProvider.userAvatar,
+      );
+    } catch (e) {
+      debugPrint('Error saving user data during onboarding: $e');
+      // Continue with onboarding even if user data update fails
+      // The data is already saved to SharedPreferences
+    }
     
     // Create habits from selections
     final selectedGoodHabits = onboardingProvider.selectedGoodHabits;
