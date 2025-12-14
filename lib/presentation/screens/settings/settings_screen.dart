@@ -847,7 +847,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   subtitle: 'Log out of your account',
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    HapticFeedback.mediumImpact();
                     _showLogoutDialog(context);
                   },
                 ),
@@ -863,10 +862,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // Capture providers before showing dialog to avoid context issues
     final authProvider = context.read<AuthProvider>();
     final habitProvider = context.read<HabitProvider>();
-    bool isProcessing = false;
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Row(
@@ -886,8 +885,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
           TextButton(
             onPressed: () async {
-              if (isProcessing) return;
-              isProcessing = true;
               Navigator.pop(dialogContext);
               await authProvider.signOut();
               await habitProvider.clearAllData();
