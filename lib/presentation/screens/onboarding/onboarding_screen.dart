@@ -37,6 +37,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     });
   }
 
+  /// Pre-populates the username field from SharedPreferences if it was set during signup.
+  /// This prevents asking the user for their name again during onboarding when they
+  /// already provided it in the signup form, improving the user experience.
   Future<void> _loadUserNameFromSignup() async {
     if (!mounted) return;
     
