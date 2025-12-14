@@ -32,11 +32,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   void initState() {
     super.initState();
-    _loadUserNameFromSignup();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadUserNameFromSignup();
+    });
   }
 
   Future<void> _loadUserNameFromSignup() async {
-    final provider = context.read<OnboardingProvider>();
+    final provider = Provider.of<OnboardingProvider>(context, listen: false);
     final prefs = await SharedPreferences.getInstance();
     final nameFromSignup = prefs.getString('user_name') ?? '';
     
