@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:confetti/confetti.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/habit_suggestions.dart';
 import '../../../core/constants/app_constants.dart';
@@ -29,6 +30,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _currentPage = 0;
 
   @override
+  void initState() {
+    super.initState();
+    _loadUserNameFromSignup();
+  }
+
+  Future<void> _loadUserNameFromSignup() async {
+    final provider = context.read<OnboardingProvider>();
+    final prefs = await SharedPreferences.getInstance();
+    final nameFromSignup = prefs.getString('user_name') ?? '';
+    
+    if (nameFromSignup.isNotEmpty && provider.userName.isEmpty) {
+      _nameController.text = nameFromSignup;
+      provider.setUserName(nameFromSignup);
+    }
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
     _nameController.dispose();
@@ -37,7 +55,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _nextPage() {
-    if (_currentPage < 6) {
+    if (_currentPage < 5) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 400),
         curve: Curves.easeInOut,
@@ -59,6 +77,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<void> _completeOnboarding() async {
     final onboardingProvider = context.read<OnboardingProvider>();
     await onboardingProvider.saveOnboardingData();
+    
+    // Update user name and avatar in HabitProvider
+    final habitProvider = context.read<HabitProvider>();
+    await habitProvider.updateUser(
+      name: onboardingProvider.userName,
+      avatarIndex: onboardingProvider.userAvatar,
+    );
     
     // Create habits from selections
     final selectedGoodHabits = onboardingProvider.selectedGoodHabits;
@@ -173,7 +198,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     else
                       const SizedBox(width: 48),
                     Text(
-                      'Step ${_currentPage + 1} of 7',
+                      'Step ${_currentPage + 1} of 6',
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 14,
@@ -190,9 +215,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   physics: const NeverScrollableScrollPhysics(),
                   onPageChanged: (index) {
                     setState(() => _currentPage = index);
-                    if (index == 6) {
-                      _confettiController.play();
-                    }
                   },
                   children: [
                     _buildWelcomePage(),
@@ -201,7 +223,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     _buildGoodHabitsPage(),
                     _buildBadHabitsPage(),
                     _buildSchedulePage(),
-                    _buildCompletionPage(),
                   ],
                 ),
               ),
@@ -211,7 +232,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
-                    7,
+                    6,
                     (index) => AnimatedContainer(
                       duration: const Duration(milliseconds: 300),
                       margin: const EdgeInsets.symmetric(horizontal: 4),
@@ -368,7 +389,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     selectedIndex: provider.userAvatar,
                     onAvatarSelected: (index) => provider.setUserAvatar(index),
                     avatarSize: 55,
-                    crossAxisCount: 4,
+                    crossAxisCount: 3,
                     spacing: 12,
                   ),
                 ),
